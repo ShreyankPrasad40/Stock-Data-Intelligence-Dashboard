@@ -1,0 +1,11 @@
+# Root requirements.txt for Vercel
+fastapi
+uvicorn
+sqlalchemy
+pandas
+numpy
+yfinance
+pydantic
+scikit-learn
+python-dotenv
+aiohttp
