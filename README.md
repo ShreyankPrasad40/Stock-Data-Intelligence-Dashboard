@@ -1,107 +1,96 @@
 # 📈 Stock Data Intelligence Dashboard
 
-A production-ready financial data platform and dashboard built with **FastAPI**, **React**, and **Pandas**. Features automated data collection, cleaning, statistical analysis, and ML-based price forecasting.
+A production-ready financial data platform and dashboard built with **FastAPI**, **React**, and **Pandas**. This project integrates automated data pipelines, statistical analysis, and machine learning to provide actionable stock market insights.
 
 ---
 
 ## ✨ Features
 
-- **Automated Data Pipeline**: Fetches 1 year of daily historical data for top NSE stocks (TCS, RELIANCE, etc.) using `yfinance`.
-- **Data Engineering**: Cleans data handling nulls, type conversions, and calculates advanced metrics (MA7, Volatility, Daily Returns).
-- **RESTful API**: Fast and robust backend using FastAPI with automated Swagger documentation.
-- **Interactive Dashboard**: Modern, glassmorphic UI built with React + Vite + Tailwind CSS + Recharts.
-- **ML Insights**: Integrates a Linear Regression model for 5-day future price predictions.
-- **Rich Analytics**: Visualizes 52-week highs/lows, volatility trends, and price history in real-time.
+- **Automated Data Pipeline**: Seamlessly fetches 1 year of daily historical data for major NSE stocks (e.g., TCS, RELIANCE) using the `yfinance` API.
+- **Advanced Data Engineering**: Cleans raw data (handling nulls, type conversions) and calculates key financial metrics like Moving Averages (MA7) and Volatility.
+- **High-Performance API**: A robust RESTful backend powered by FastAPI with automated Pydantic validation and Swagger documentation.
+- **Predictive Analytics**: Leverages a `Scikit-Learn` Linear Regression model to forecast future price trends (5-day predictions).
+- **Premium UI/UX**: Modern, glassmorphic dashboard built with React, Vite, Tailwind CSS, and interactive charts via Recharts.
+
+---
+
+## 🏗️ How it Works
+
+### ⚙️ Backend Architecture (Python/FastAPI)
+The backend acts as the "Brain" of the operation:
+1.  **Ingestion**: On the very first run (lifespan hook), the `Data Fetcher` service pings Yahoo Finance, downloads historical CSV-like data, and persists it into a local **SQLite** database via **SQLAlchemy**.
+2.  **Processing**: The data is cleaned and structured into the `StockData` model.
+3.  **Intelligence**: When you request a prediction, the backend retrieves all historical prices for that symbol, transforms them into a NumPy array, and fits a **Linear Regression** model to calculate a 5-day trendline.
+4.  **Delivery**: Standardized JSON responses are served via Pydantic schemas over `/api` routes.
+
+### 🎨 Frontend Architecture (React/Vite)
+The frontend is the "Face" of the operation:
+1.  **Reactive State**: The application tracks the `selectedSymbol` in the top-level `App` component.
+2.  **Async Orchestration**: When a symbol changes, the `Dashboard` component triggers multiple parallel `Axios` calls to fetch historical data, summary stats, and predictions.
+3.  **Visualization**: Raw JSON data is fed into `Recharts` components, which render responsive, theme-aware line charts and performance bars.
+4.  **Styling**: Utilizes a customized Tailwind CSS configuration with backdrop-blurs and deep gradients to achieve a premium "glass" aesthetic.
 
 ---
 
 ## 🛠 Tech Stack
 
-### Backend
-- **Core**: Python 3.9+
-- **Framework**: FastAPI
-- **Data Library**: Pandas & NumPy
-- **Database**: SQLite with SQLAlchemy ORM
-- **ML Engine**: Scikit-Learn
-- **API Models**: Pydantic
-
-### Frontend
-- **Framework**: React + Vite
-- **Styling**: Tailwind CSS
-- **Icons**: Lucide React
-- **Charting**: Recharts
-- **API Client**: Axios
+| Component | Technology |
+| :--- | :--- |
+| **Backend Framework** | FastAPI (Python) |
+| **Data Analysis** | Pandas, NumPy |
+| **Machine Learning** | Scikit-Learn |
+| **ORM / Database** | SQLAlchemy / SQLite |
+| **Frontend Framework** | React (Vite) |
+| **Styling** | Tailwind CSS |
+| **Charting** | Recharts |
 
 ---
 
-## 🚀 Setup Instructions
+## 🚀 Getting Started
 
 ### Prerequisites
-- Python 3.9+ (`py` or `python` command)
-- Node.js & npm
+- **Python 3.9+**
+- **Node.js 18+**
 
-### Backend Setup
-1. **Navigate to backend folder**:
-   ```bash
-   cd backend
-   ```
-2. **Install dependencies**:
-   ```bash
-   py -m pip install -r requirements.txt
-   ```
-3. **Run the server**:
-   ```bash
-   py -m uvicorn app.main:app --reload
-   ```
-   *Note: On first run, it will automatically fetch 1 year of stock data (~30-60s).*
+### 1. Start the Backend
+```bash
+cd backend
+# Create and activate virtual environment (optional)
+python -m venv venv
+.\venv\Scripts\activate
 
-### Frontend Setup
-1. **Navigate to frontend folder**:
-   ```bash
-   cd frontend
-   ```
-2. **Install dependencies**:
-   ```bash
-   npm install
-   ```
-3. **Run the development server**:
-   ```bash
-   npm run dev
-   ```
+# Install dependencies
+pip install -r requirements.txt
+
+# Run server
+uvicorn app.main:app --reload
+```
+*The API will be available at `http://localhost:8000`. Check `/docs` for the interactive API explorer.*
+
+### 2. Start the Frontend
+```bash
+cd frontend
+npm install
+npm run dev
+```
+*The Dashboard will be live at `http://localhost:5173`.*
 
 ---
 
-## 🔗 API Documentation
-
-Access the auto-generated Swagger docs at: `http://localhost:8000/docs`
+## 🔗 Key API Endpoints
 
 | Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/companies` | List available stock symbols |
-| GET | `/api/data/{symbol}` | Last 30 days of processed daily data |
-| GET | `/api/summary/{symbol}` | 52-week high, low, and avg. closing price |
-| GET | `/api/compare` | Performance comparison between two stocks |
-| GET | `/api/predict/{symbol}` | 5-day price forecast using Linear Regression |
+| :--- | :--- | :--- |
+| **GET** | `/api/companies` | Returns all available stock symbols |
+| **GET** | `/api/data/{symbol}` | Fetches the last 30 days of price history |
+| **GET** | `/api/summary/{symbol}` | 52-week summary stats (High, Low, Avg) |
+| **GET** | `/api/predict/{symbol}` | Machine learning price trend prediction |
 
 ---
 
-## 📊 Sample Response (Stock Summary)
-```json
-{
-  "symbol": "TCS.NS",
-  "high_52w": 4567.45,
-  "low_52w": 3120.20,
-  "avg_close": 3850.15
-}
-```
+## 📊 Design Philosophy
+- **Performance First**: Minimalist database queries and efficient React rendering.
+- **Glassmorphism**: High-end visual style using semi-transparent layers and blurred backgrounds.
+- **Actionable Data**: Focusing on clarity—making complex financial data easy to read through visualization.
 
 ---
-
-## 🦾 Architecture Decisions
-- **Modularity**: Services separated into `Data Fetcher` and `Data Processor` for scalability.
-- **Performance**: Bulk database insertions and optimized SQLAlchemy queries.
-- **User Experience**: Glassmorphism UI with framer-motion like transitions (standard CSS animations) and real-time charting.
-
----
-
-
